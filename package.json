@@ -1,0 +1,23 @@
+{
+  "name": "building-user-friendly-dsls",
+  "version": "1.0.0",
+  "description": "This is my attempt to work through the book Building User Friendly DSLs by Meinte Boersma. The first pass will be the work from the book but I intend on using it as a jumping off point to create my own projectional editors.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mobx": "^6.12.0",
+    "mobx-react": "^9.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "devDependencies": {
+    "parcel": "^2.12.0",
+    "process": "^0.11.10"
+  }
+}
