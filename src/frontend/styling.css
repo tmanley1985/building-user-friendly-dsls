@@ -40,3 +40,13 @@ div.attribute {
 span.enum-like {
   font-style: italic;
 }
+
+div.inline {
+  display: inline-block;
+}
+
+span.reference {
+  font-style: italic;
+  color: blue;
+  text-decoration: underline;
+}
