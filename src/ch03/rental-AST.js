@@ -48,18 +48,6 @@ const discountAttribute = {
   },
 }
 
-const rentalPriceAfterDiscountAttribute = {
-  concept: "Data Attribute",
-  settings: {
-    name: "rental price after discount",
-    type: "amount",
-  },
-}
-
-/*********************************************
- *  VALUES WITH REFERENCES
- *********************************************/
-
 const rentalPriceAfterDiscountInitialValue = {
   concept: "Attribute Reference",
   settings: {
@@ -80,6 +68,15 @@ const rentalPriceAfterDiscountInitialValue = {
       // That way, if this attribute needs to go away, we're not destroying the referred object!!
       ref: rentalPriceBeforeDiscountAttribute,
     },
+  },
+}
+
+const rentalPriceAfterDiscountAttribute = {
+  concept: "Data Attribute",
+  settings: {
+    name: "rental price after discount",
+    type: "amount",
+    initialValue: rentalPriceAfterDiscountInitialValue,
   },
 }
 
