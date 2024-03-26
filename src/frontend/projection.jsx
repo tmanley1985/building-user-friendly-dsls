@@ -1,5 +1,8 @@
 import React from "react"
+import { observable } from "mobx"
+import { observer } from "mobx-react"
 import { isAstObject } from "../common/ast"
+import { TextValue } from "./value-components"
 
 // A or an? This function will return what you need.
 const indefiniteArticleFor = nextWord =>
@@ -15,7 +18,7 @@ const indefiniteArticleFor = nextWord =>
  * it's referencing is an Amount or a Percentage because in the UI you'd have to know which symbol
  * ($ or %) to show!
  */
-export const Projection = ({ astObject, parent }) => {
+export const Projection = observer(({ astObject, parent }) => {
   if (isAstObject(astObject)) {
     const { settings } = astObject
     switch (astObject.concept) {
@@ -24,7 +27,15 @@ export const Projection = ({ astObject, parent }) => {
           <div>
             <div>
               <span className="keyword ws-right">Record Type</span>
-              <span className="value">Rental</span>
+              <TextValue
+                editState={observable({
+                  value: settings["name"],
+                  inEdit: false,
+                  setValue: newValue => {
+                    settings["name"] = value
+                  },
+                })}
+              />
             </div>
             <div className="section">
               <div>
@@ -44,7 +55,15 @@ export const Projection = ({ astObject, parent }) => {
         return (
           <div className="attribute">
             <span className="keyword ws-right">the</span>
-            <span className="value">{settings["name"]}</span>
+            <TextValue
+              editState={observable({
+                value: settings["name"],
+                inEdit: false,
+                setValue: newValue => {
+                  settings["name"] = newValue
+                },
+              })}
+            />
             <span className="keyword ws-both">
               is {indefiniteArticleFor(settings["type"])}
             </span>
@@ -90,4 +109,4 @@ export const Projection = ({ astObject, parent }) => {
         )
     }
   }
-}
+})
