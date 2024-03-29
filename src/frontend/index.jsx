@@ -7,5 +7,5 @@ import { Projection } from "./projection"
 require("./styling.css")
 
 createRoot(document.getElementById("root")).render(
-  <Projection astObject={observable(rental)} />
+  <Projection astObject={observable(rental)} ancestors={[]} />
 )
