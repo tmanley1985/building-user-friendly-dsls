@@ -2,7 +2,7 @@ import React from "react"
 import { observable } from "mobx"
 import { observer } from "mobx-react"
 import { isAstObject } from "../common/ast"
-import { TextValue } from "./value-components"
+import { DropDownValue, NumberValue, TextValue } from "./value-components"
 
 // A or an? This function will return what you need.
 const indefiniteArticleFor = nextWord =>
@@ -21,21 +21,21 @@ const indefiniteArticleFor = nextWord =>
 export const Projection = observer(({ astObject, parent }) => {
   if (isAstObject(astObject)) {
     const { settings } = astObject
+    const editStateFor = propertyName =>
+      observable({
+        value: settings[propertyName],
+        inEdit: false,
+        setValue: newValue => {
+          settings[propertyName] = newValue
+        },
+      })
     switch (astObject.concept) {
       case "Record Type":
         return (
           <div>
             <div>
               <span className="keyword ws-right">Record Type</span>
-              <TextValue
-                editState={observable({
-                  value: settings["name"],
-                  inEdit: false,
-                  setValue: newValue => {
-                    settings["name"] = value
-                  },
-                })}
-              />
+              <TextValue editState={editStateFor("name")} />
             </div>
             <div className="section">
               <div>
@@ -64,10 +64,15 @@ export const Projection = observer(({ astObject, parent }) => {
                 },
               })}
             />
+            {/* This selects the `is a` or `is an` value for us. */}
             <span className="keyword ws-both">
               is {indefiniteArticleFor(settings["type"])}
             </span>
-            <span className="value enum-like ws-right">{settings["type"]}</span>
+            <DropDownValue
+              className="value enum-like ws-right"
+              editState={editStateFor("type")}
+              options={["amount", "date range", "percentage"]}
+            />
             {settings["initialValue"] && (
               <div className="inline">
                 <span className="keyword ws-right">initially</span>
@@ -96,7 +101,7 @@ export const Projection = observer(({ astObject, parent }) => {
         return (
           <div className="inline">
             {type === "amount" && <span className="keyword">$</span>}
-            <span className="value">{settings["value"]}</span>
+            <NumberValue editState={editStateFor("value")} />
             {type === "percentage" && <span className="keyword">%</span>}
           </div>
         )
