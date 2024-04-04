@@ -90,17 +90,25 @@ export const NumberValue = inputValueComponent({
  * @returns {React.ReactElement}
  */
 export const DropDownValue = observer(
-  ({ editState, className, options, placeholderText }) =>
+  ({ editState, className, options, placeholderText, actionText }) =>
     editState.inEdit ? (
       <select
         autoFocus={true}
         value={editState.value}
         style={{
-          width: Math.max(...options.map(option => option.length)) + "ch",
+          width:
+            Math.max(
+              ...options.map(option => option.length),
+              actionText && actionText.length
+            ) + "ch",
         }}
         onChange={action(event => {
-          editState.setValue(event.target.value)
-          editState.inEdit = false
+          const newValue = event.target.value
+
+          if (newValue !== actionText) {
+            editState.setValue(event.target.value)
+            editState.inEdit = false
+          }
         })}
         onBlur={action(_ => {
           editState.inEdit = false
@@ -112,6 +120,12 @@ export const DropDownValue = observer(
         })}
         className={className}
       >
+        {/* If there's an action text, we're adding this to the list of options. */}
+        {actionText && (
+          <option key={-1} className="action">
+            {actionText}
+          </option>
+        )}
         {options.map((option, index) => (
           <option key={index}>{option}</option>
         ))}

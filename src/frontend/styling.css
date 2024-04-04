@@ -82,3 +82,8 @@ span.value-missing {
   text-decoration-style: dashed;
   text-decoration-color: rgb(228, 30, 23);
 }
+
+select option.action {
+  color: lightgray;
+  font-style: italic;
+}

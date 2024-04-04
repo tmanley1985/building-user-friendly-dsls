@@ -1,7 +1,7 @@
 import React from "react"
 import { action, observable } from "mobx"
 import { observer } from "mobx-react"
-import { isAstObject } from "../common/ast"
+import { isAstObject, placeholderAstObject } from "../common/ast"
 import { DropDownValue, NumberValue, TextValue } from "./value-components"
 
 // A or an? This function will return what you need.
@@ -96,14 +96,41 @@ export const Projection = observer(({ astObject, ancestors }) => {
               options={["amount", "date range", "percentage"]}
               placeholderText={"<type>"}
             />
-            {settings["initialValue"] && (
+            {settings["initialValue"] ? (
               <div className="inline">
                 <span className="keyword ws-right">initially</span>
-                <Projection
-                  astObject={settings["initialValue"]}
-                  ancestors={[astObject, ...ancestors]}
-                />
+                {settings["initialValue"] === placeholderAstObject ? (
+                  <DropDownValue
+                    editState={observable({
+                      inEdit: true,
+                      setValue: newValue => {
+                        settings["initialValue"] = {
+                          concept: newValue,
+                          settings: {},
+                        }
+                      },
+                    })}
+                    options={["Attribute Reference", "Number"]}
+                    placeholderText="<initial value>"
+                    actionText={"(choose concept for initial value)"}
+                  />
+                ) : (
+                  <Projection
+                    astObject={settings["initialValue"]}
+                    ancestors={[astObject, ...ancestors]}
+                  />
+                )}
               </div>
+            ) : (
+              <button
+                className="add-new"
+                tabIndex={-1}
+                onClick={action(_ => {
+                  settings["initialValue"] = placeholderAstObject
+                })}
+              >
+                + initial value
+              </button>
             )}
           </div>
         )
@@ -125,16 +152,22 @@ export const Projection = observer(({ astObject, ancestors }) => {
             <span className="keyword ws-right">the</span>
             <DropDownValue
               editState={observable({
-                value: settings["attribute"].ref.settings["name"],
+                value:
+                  settings["attribute"] &&
+                  settings["attribute"].ref.settings["name"],
                 inEdit: false,
                 setValue: newValue => {
-                  settings["attribute"].ref = attributes.find(
-                    attribute => attribute.settings["name"] === newValue
-                  )
+                  settings["attribute"] = {
+                    ref: attributes.find(
+                      attribute => attribute.settings["name"] === newValue
+                    ),
+                  }
                 },
               })}
               className="reference"
               options={attributes.map(attribute => attribute.settings["name"])}
+              actionText={"(choose an attribute to reference)"}
+              placeholderText="<attribute>"
             />
           </div>
         )
@@ -147,7 +180,10 @@ export const Projection = observer(({ astObject, ancestors }) => {
         return (
           <div className="inline">
             {type === "amount" && <span className="keyword">$</span>}
-            <NumberValue editState={editStateFor("value")} />
+            <NumberValue
+              editState={editStateFor("value")}
+              placeholderText={"<number>"}
+            />
             {type === "percentage" && <span className="keyword">%</span>}
           </div>
         )
