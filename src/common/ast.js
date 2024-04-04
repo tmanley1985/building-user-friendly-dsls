@@ -8,7 +8,10 @@ const isAstReferenceObject = value => isObject(value) && "ref" in value
 const isAstReference = value =>
   isAstReferenceObject(value) && isAstObject(value.ref)
 
+const placeholderAstObject = "<placeholder for an AST object>"
+
 module.exports = {
   isAstObject,
   isAstReference,
+  placeholderAstObject,
 }
