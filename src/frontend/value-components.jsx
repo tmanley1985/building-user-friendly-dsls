@@ -3,6 +3,7 @@ import { action } from "mobx"
 import { observer } from "mobx-react"
 
 const isNumber = str => !isNaN(str) && str.trim().length > 0
+const isMissing = value => value === null || value === undefined
 
 /**
  * Represents a book.
@@ -17,8 +18,8 @@ const isNumber = str => !isNaN(str) && str.trim().length > 0
  * @returns
  */
 export const inputValueComponent = ({ inputType, isValid }) =>
-  observer(({ editState }) =>
-    editState.inEdit ? (
+  observer(({ editState, placeholderText }) =>
+    console.log({ inputType, placeholderText }) || editState.inEdit ? (
       <input
         type={inputType}
         defaultValue={editState.value}
@@ -45,12 +46,14 @@ export const inputValueComponent = ({ inputType, isValid }) =>
       />
     ) : (
       <span
-        className="value"
+        className={
+          "value" + (isMissing(editState.value) ? " value-missing" : "")
+        }
         onClick={action(_ => {
           editState.inEdit = true
         })}
       >
-        {editState.value}
+        {isMissing(editState.value) ? placeholderText : editState.value}
       </span>
     )
   )
@@ -86,40 +89,43 @@ export const NumberValue = inputValueComponent({
  *
  * @returns {React.ReactElement}
  */
-export const DropDownValue = observer(({ editState, className, options }) =>
-  editState.inEdit ? (
-    <select
-      autoFocus={true}
-      value={editState.value}
-      style={{
-        width: Math.max(...options.map(option => option.length)) + "ch",
-      }}
-      onChange={action(event => {
-        editState.setValue(event.target.value)
-        editState.inEdit = false
-      })}
-      onBlur={action(_ => {
-        editState.inEdit = false
-      })}
-      onKeyUp={action(event => {
-        if (event.key === "Escape") {
+export const DropDownValue = observer(
+  ({ editState, className, options, placeholderText }) =>
+    editState.inEdit ? (
+      <select
+        autoFocus={true}
+        value={editState.value}
+        style={{
+          width: Math.max(...options.map(option => option.length)) + "ch",
+        }}
+        onChange={action(event => {
+          editState.setValue(event.target.value)
           editState.inEdit = false
+        })}
+        onBlur={action(_ => {
+          editState.inEdit = false
+        })}
+        onKeyUp={action(event => {
+          if (event.key === "Escape") {
+            editState.inEdit = false
+          }
+        })}
+        className={className}
+      >
+        {options.map((option, index) => (
+          <option key={index}>{option}</option>
+        ))}
+      </select>
+    ) : (
+      <span
+        className={
+          className + isMissing(editState.value) ? "value-missing" : ""
         }
-      })}
-      className={className}
-    >
-      {options.map((option, index) => (
-        <option key={index}>{option}</option>
-      ))}
-    </select>
-  ) : (
-    <span
-      className={className}
-      onClick={action(_ => {
-        editState.inEdit = true
-      })}
-    >
-      {editState.value}
-    </span>
-  )
+        onClick={action(_ => {
+          editState.inEdit = true
+        })}
+      >
+        {isMissing(editState.value) ? placeholderText : editState.value}
+      </span>
+    )
 )

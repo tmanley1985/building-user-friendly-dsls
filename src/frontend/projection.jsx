@@ -1,12 +1,15 @@
 import React from "react"
-import { observable } from "mobx"
+import { action, observable } from "mobx"
 import { observer } from "mobx-react"
 import { isAstObject } from "../common/ast"
 import { DropDownValue, NumberValue, TextValue } from "./value-components"
 
 // A or an? This function will return what you need.
 const indefiniteArticleFor = nextWord =>
-  "a" + (nextWord.toLowerCase().match(/^[aeiou]/) ? "n" : "")
+  "a" +
+  (typeof nextWord === "string" && nextWord.toLowerCase().match(/^[aeiou]/)
+    ? "n"
+    : "")
 
 /**
  * This projection function is essentially a large switch statement that acts like
@@ -35,7 +38,10 @@ export const Projection = observer(({ astObject, ancestors }) => {
           <div>
             <div>
               <span className="keyword ws-right">Record Type</span>
-              <TextValue editState={editStateFor("name")} />
+              <TextValue
+                editState={editStateFor("name")}
+                placeholderText={"<name>"}
+              />
             </div>
             <div className="section">
               <div>
@@ -48,6 +54,21 @@ export const Projection = observer(({ astObject, ancestors }) => {
                   key={index}
                 />
               ))}
+              <button
+                className="add-new"
+                tabIndex={-1}
+                // This is what allows us to add new attributes to a record type.
+                onClick={action(_ => {
+                  settings["attributes"].push({
+                    concept: "Data Attribute",
+                    // Notice how the settings are empty initially? We allow the domain
+                    // expert to fill those in.
+                    settings: {},
+                  })
+                })}
+              >
+                + attribute
+              </button>
             </div>
           </div>
         )
@@ -63,6 +84,7 @@ export const Projection = observer(({ astObject, ancestors }) => {
                   settings["name"] = newValue
                 },
               })}
+              placeholderText={"<name>"}
             />
             {/* This selects the `is a` or `is an` value for us. */}
             <span className="keyword ws-both">
@@ -72,6 +94,7 @@ export const Projection = observer(({ astObject, ancestors }) => {
               className="value enum-like ws-right"
               editState={editStateFor("type")}
               options={["amount", "date range", "percentage"]}
+              placeholderText={"<type>"}
             />
             {settings["initialValue"] && (
               <div className="inline">
